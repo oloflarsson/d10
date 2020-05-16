@@ -1,26 +1,25 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+class App extends React.Component {
+  state = {
+    dices: 4,
+    again: 10,
+    successes: 0
+  }
+
+  render() {
+    const {dices, again, successes} = this.state
+    return (
+      <div className="App">
+        <header className="App-header">
+          <p>Dices: {dices}</p>
+          <p>Again: {again}</p>
+          <p>Successes: {successes}</p>
+        </header>
+      </div>
+    );
+  }
+}  
 
 export default App;
