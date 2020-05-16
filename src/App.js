@@ -2,23 +2,38 @@ import React from 'react';
 import './App.css';
 import DiceUtil from './DiceUtil';
 
+const STARTING_DICES = 4
+const STARTING_AGAIN = 10
+const STARTING_EXPECTED = DiceUtil.getExpected(STARTING_DICES, STARTING_AGAIN)
+
 class App extends React.Component {
   state = {
-    dices: 4,
-    again: 10,
+    dices: STARTING_DICES,
+    again: STARTING_AGAIN,
+    expected: STARTING_EXPECTED,
     rollEnabled: true,
     willpowerEnabled: true,
     successes: 0,
   }
 
   handleDicesChanged = (event) => {
+    const { again } = this.state
     const dices = event.target.value
-    this.setState({ dices })
+    const expected = DiceUtil.getExpected(dices, again)
+    this.setState({
+      dices,
+      expected,
+    })
   }
 
   handleAgainChanged = (event) => {
+    const { dices } = this.state
     const again = event.target.value
-    this.setState({ again })
+    const expected = DiceUtil.getExpected(dices, again)
+    this.setState({
+      again,
+      expected,
+    })
   }
 
   handleClear = () => {
@@ -30,25 +45,30 @@ class App extends React.Component {
   }
 
   handleRoll = () => {
-    const { dices, again } = this.state
-    const targetSuccesses = DiceUtil.getSuccesses(dices, again)
+    const { dices } = this.state
+    this.rollDices(dices)
     this.setState({
-      successes: targetSuccesses,
       rollEnabled: false,
     })
   }
 
   handleWillpower = () => {
-    const { successes, again } = this.state
-    const targetSuccesses = successes + DiceUtil.getSuccesses(3, again)
+    this.rollDices(3)
     this.setState({
-      successes: targetSuccesses,
       willpowerEnabled: false,
     })
   }
 
+  rollDices = (dices) => {
+    const { again, successes } = this.state
+    const targetSuccesses = successes + DiceUtil.getSuccesses(dices, again)
+    this.setState({
+      successes: targetSuccesses,
+    }, this.updateExpected)
+  }
+
   render() {
-    const { dices, again, rollEnabled, willpowerEnabled, successes } = this.state
+    const { dices, again, expected, rollEnabled, willpowerEnabled, successes } = this.state
     return (
       <div className="App">
         <header className="App-header">
@@ -80,6 +100,10 @@ class App extends React.Component {
 
             <div className="successes">
               {successes}
+            </div>
+
+            <div className="expected">
+              {expected.toFixed(1)} expected
             </div>
           </div>
         </header>

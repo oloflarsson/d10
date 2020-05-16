@@ -22,4 +22,18 @@ const getSuccesses = (dices, again) => {
   return successes
 }
 
-export default { getSuccesses }
+const getExpected = (dices, again) => {
+  const samples = 100000
+  let sum = 0
+  for (let index = 0; index < samples; index++) {
+    sum += getSuccesses(dices, again)
+  }
+  return sum / samples
+}
+
+export default {
+  getValue,
+  getSuccessesSingle,
+  getSuccesses,
+  getExpected,
+}
