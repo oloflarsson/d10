@@ -6,7 +6,9 @@ class App extends React.Component {
   state = {
     dices: 4,
     again: 10,
-    successes: 0
+    rollEnabled: true,
+    willpowerEnabled: true,
+    successes: 0,
   }
 
   handleDicesChanged = (event) => {
@@ -19,36 +21,67 @@ class App extends React.Component {
     this.setState({ again })
   }
 
+  handleClear = () => {
+    this.setState({
+      rollEnabled: true,
+      willpowerEnabled: true,
+      successes: 0,
+    })
+  }
+
   handleRoll = () => {
     const { dices, again } = this.state
-    const successes = DiceUtil.getSuccesses(dices, again)
-    this.setState({ successes })
+    const targetSuccesses = DiceUtil.getSuccesses(dices, again)
+    this.setState({
+      successes: targetSuccesses,
+      rollEnabled: false,
+    })
+  }
+
+  handleWillpower = () => {
+    const { successes, again } = this.state
+    const targetSuccesses = successes + DiceUtil.getSuccesses(3, again)
+    this.setState({
+      successes: targetSuccesses,
+      willpowerEnabled: false,
+    })
   }
 
   render() {
-    const { dices, again, successes } = this.state
+    const { dices, again, rollEnabled, willpowerEnabled, successes } = this.state
     return (
       <div className="App">
         <header className="App-header">
-          <table>
-            <tbody>
-              <tr>
-                <td>Dices: </td>
-                <td><input type="number" value={dices} onChange={this.handleDicesChanged} /></td>
-              </tr>
-              <tr>
-                <td>Again: </td>
-                <td><input type="number" value={again} onChange={this.handleAgainChanged} /></td>
-              </tr>
-              <tr>
-                <td colSpan={2}><button type="button" onClick={this.handleRoll}>Roll</button></td>
-              </tr>
-              <tr>
-                <td>Successes: </td>
-                <td>{successes}</td>
-              </tr>
-            </tbody>
-          </table>
+          <div className="holder">
+            <div className="map">
+              <div className="entry">
+                <div className="key">
+                  Dices:
+                </div>
+                <div className="value">
+                  <input type="number" min="1" value={dices} onChange={this.handleDicesChanged} />
+                </div>
+              </div>
+              <div className="entry">
+                <div className="key">
+                  Again:
+                </div>
+                <div className="value">
+                <input type="number" min="2" value={again} onChange={this.handleAgainChanged} />
+                </div>
+              </div>
+            </div>
+
+            <div className="buttons">
+              <button className="button" type="button" onClick={this.handleClear}>Clear</button>
+              <button className="button" type="button" onClick={this.handleRoll} disabled={rollEnabled ? '' : 'disabled'}>Roll</button>
+              <button className="button" type="button" onClick={this.handleWillpower} disabled={willpowerEnabled ? '' : 'disabled'}>Willpower</button>
+            </div>
+
+            <div className="successes">
+              {successes}
+            </div>
+          </div>
         </header>
       </div>
     );

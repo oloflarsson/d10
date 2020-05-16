@@ -1,14 +1,56 @@
 .App {
   text-align: center;
+  background-color: #282c34;
 }
 
 .App-header {
-  background-color: #282c34;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  /*justify-content: center;*/
-  font-size: calc(10px + 2vmin);
+  /*justify-content: center;
+  font-size: calc(10px + 2vmin);*/
   color: white;
+}
+
+* {
+  font-size: 3vmin;
+  width: 100%;
+}
+
+.holder {
+  width: 70vmin;
+}
+
+.map {
+  padding-top: 10vmin;
+  padding-bottom: 5vmin;
+}
+
+.entry {
+  display: flex;
+  padding: 1vmin;
+}
+
+.key {
+  width: 50%;
+}
+
+.value {
+  width: 50%;
+}
+
+.buttons {
+  width: 70vmin;
+  padding-bottom: 2vmin;
+}
+
+.button {
+  width: 30%;
+  padding: 1vmin;
+  margin: 1vmin;
+}
+
+.successes {
+  font-size: 30vmin;
 }
