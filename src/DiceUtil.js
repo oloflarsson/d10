@@ -1,3 +1,4 @@
+import _ from 'lodash'
 const getValue = () => {
   return Math.ceil(Math.random() * 10)
 }
@@ -22,13 +23,20 @@ const getSuccesses = (dices, again) => {
   return successes
 }
 
-const getExpected = (dices, again) => {
-  const samples = 100000
+const getExpectedSingleUnmemoized = (again) => {
+  const samples = 1000000
   let sum = 0
   for (let index = 0; index < samples; index++) {
-    sum += getSuccesses(dices, again)
+    sum += getSuccessesSingle(again)
   }
   return sum / samples
+}
+
+const getExpectedSingle = _.memoize(getExpectedSingleUnmemoized)
+
+const getExpected = (dices, again) => {
+  const expectedSingle = getExpectedSingle(again)
+  return expectedSingle * dices
 }
 
 export default {
