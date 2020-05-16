@@ -1,29 +1,6 @@
 import React from 'react';
 import './App.css';
-
-const getDiceValue = () => {
-  return Math.ceil(Math.random() * 10)
-}
-
-const getDiceSuccesses = (again) => {
-  let successes = 0
-  const value = getDiceValue()
-  if (value >= 8) {
-    successes += 1
-  }
-  if (value >= again) {
-    successes += getDiceSuccesses(again)
-  }
-  return successes
-}
-
-const getDiceSuccessesMultiple = (dices, again) => {
-  let successes = 0
-  for (let index = 0; index < dices; index++) {
-    successes += getDiceSuccesses(again)
-  }
-  return successes
-}
+import DiceUtil from './DiceUtil';
 
 class App extends React.Component {
   state = {
@@ -44,7 +21,7 @@ class App extends React.Component {
 
   handleRoll = () => {
     const { dices, again } = this.state
-    const successes = getDiceSuccessesMultiple(dices, again)
+    const successes = DiceUtil.getSuccesses(dices, again)
     this.setState({ successes })
   }
 
@@ -53,19 +30,25 @@ class App extends React.Component {
     return (
       <div className="App">
         <header className="App-header">
-          <div>
-            <input type="number" value={dices} onChange={this.handleDicesChanged} />
-          </div>
-
-          <div>
-            <input type="number" value={again} onChange={this.handleAgainChanged} />
-          </div>
-
-          <div>
-            <button type="button" onClick={this.handleRoll}>Roll</button>
-          </div>
-
-          <p>{successes} Successes</p>
+          <table>
+            <tbody>
+              <tr>
+                <td>Dices: </td>
+                <td><input type="number" value={dices} onChange={this.handleDicesChanged} /></td>
+              </tr>
+              <tr>
+                <td>Again: </td>
+                <td><input type="number" value={again} onChange={this.handleAgainChanged} /></td>
+              </tr>
+              <tr>
+                <td colSpan={2}><button type="button" onClick={this.handleRoll}>Roll</button></td>
+              </tr>
+              <tr>
+                <td>Successes: </td>
+                <td>{successes}</td>
+              </tr>
+            </tbody>
+          </table>
         </header>
       </div>
     );
