@@ -71,42 +71,40 @@ class App extends React.Component {
     const { dices, again, expected, rollEnabled, willpowerEnabled, successes } = this.state
     return (
       <div className="App">
-        <header className="App-header">
-          <div className="holder">
-            <div className="map">
-              <div className="entry">
-                <div className="key">
-                  Dices:
-                </div>
-                <div className="value">
-                  <input type="number" min="1" value={dices} onChange={this.handleDicesChanged} />
-                </div>
+        <div className="holder">
+          <div className="map">
+            <div className="entry">
+              <div className="key">
+                Dices:
               </div>
-              <div className="entry">
-                <div className="key">
-                  Again:
-                </div>
-                <div className="value">
-                <input type="number" min="2" max="11" value={again} onChange={this.handleAgainChanged} />
-                </div>
+              <div className="value">
+                <input type="number" min="1" value={dices} onChange={this.handleDicesChanged} />
               </div>
             </div>
-
-            <div className="buttons">
-              <button className="button" type="button" onClick={this.handleClear}>Clear</button>
-              <button className="button" type="button" onClick={this.handleRoll} disabled={rollEnabled ? '' : 'disabled'}>Roll</button>
-              <button className="button" type="button" onClick={this.handleWillpower} disabled={willpowerEnabled ? '' : 'disabled'}>Willpower</button>
-            </div>
-
-            <div className="successes">
-              {successes}
-            </div>
-
-            <div className="expected">
-              {expected.toFixed(1)} expected
+            <div className="entry">
+              <div className="key">
+                Again:
+              </div>
+              <div className="value">
+              <input type="number" min="2" max="11" value={again} onChange={this.handleAgainChanged} />
+              </div>
             </div>
           </div>
-        </header>
+
+          <div className="buttons">
+            <button className="button" type="button" onClick={this.handleClear}>Clear</button>
+            <button className="button" type="button" onClick={this.handleRoll} disabled={rollEnabled ? '' : 'disabled'}>Roll</button>
+            <button className="button" type="button" onClick={this.handleWillpower} disabled={willpowerEnabled ? '' : 'disabled'}>Willpower</button>
+          </div>
+
+          <div className="successes">
+            {successes}
+          </div>
+
+          <div className="expected">
+            {expected.toFixed(1)} expected
+          </div>
+        </div>
       </div>
     );
   }
