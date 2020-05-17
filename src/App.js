@@ -6,10 +6,12 @@ import LocalStorageAccessor from './LocalStorageAccessor';
 const STARTING_DICES = 4
 const STARTING_AGAIN = 10
 const STARTING_EXPECTED = DiceUtil.getExpected(STARTING_DICES, STARTING_AGAIN)
+const STARTING_CHANGE = DiceUtil.getChance(STARTING_DICES)
 const STORAGE = new LocalStorageAccessor('storage', {
   dices: STARTING_DICES,
   again: STARTING_AGAIN,
   expected: STARTING_EXPECTED,
+  chance: STARTING_CHANGE,
   rollEnabled: true,
   willpowerEnabled: true,
   successes: 0,
@@ -26,9 +28,11 @@ class App extends React.Component {
     const { again } = this.state
     const dices = event.target.value
     const expected = DiceUtil.getExpected(dices, again)
+    const chance = DiceUtil.getChance(dices)
     this.setState({
       dices,
       expected,
+      chance,
     }, this.saveState)
   }
 
@@ -36,9 +40,11 @@ class App extends React.Component {
     const { dices } = this.state
     const again = event.target.value
     const expected = DiceUtil.getExpected(dices, again)
+    const chance = DiceUtil.getChance(dices)
     this.setState({
       again,
       expected,
+      chance,
     }, this.saveState)
   }
 
@@ -74,7 +80,7 @@ class App extends React.Component {
   }
 
   render() {
-    const { dices, again, expected, rollEnabled, willpowerEnabled, successes } = this.state
+    const { dices, again, expected, chance, rollEnabled, willpowerEnabled, successes } = this.state
     return (
       <div className="App">
         <div className="holder">
@@ -104,11 +110,14 @@ class App extends React.Component {
           </div>
 
           <div className="successes">
-            {successes}
+            {rollEnabled && willpowerEnabled ? '?' : successes}
           </div>
 
           <div className="expected">
             {expected.toFixed(1)} expected
+          </div>
+          <div className="chance">
+            {Math.round(chance * 100)}% chance
           </div>
         </div>
       </div>

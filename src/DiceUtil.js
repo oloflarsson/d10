@@ -48,9 +48,14 @@ const getExpected = (dices, again) => {
   return expectedSingle * dices
 }
 
+const getChance = (dices) => {
+  return 1 - Math.pow(0.7, dices)
+}
+
 export default {
   getValue,
   getSuccessesSingle,
   getSuccesses,
   getExpected,
+  getChance,
 }
