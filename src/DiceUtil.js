@@ -1,4 +1,3 @@
-import _ from 'lodash'
 const getValue = () => {
   return Math.ceil(Math.random() * 10)
 }
@@ -23,16 +22,26 @@ const getSuccesses = (dices, again) => {
   return successes
 }
 
-const getExpectedSingleUnmemoized = (again) => {
-  const samples = 1000000
+const getExpectedSingleSampledUnmemoized = (again, samples) => {
   let sum = 0
   for (let index = 0; index < samples; index++) {
     sum += getSuccessesSingle(again)
   }
   return sum / samples
 }
+window.test1 = getExpectedSingleSampledUnmemoized
 
-const getExpectedSingle = _.memoize(getExpectedSingleUnmemoized)
+const getExpectedSingle = (again) => {
+  if (again <= 1) {
+    throw new Error('again must be larger than or equal to 2')
+  }
+
+  if (again >= 11) {
+    return 3 / 10
+  }
+
+  return 3 / (again - 1)
+}
 
 const getExpected = (dices, again) => {
   const expectedSingle = getExpectedSingle(again)
