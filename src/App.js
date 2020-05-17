@@ -114,7 +114,7 @@ class App extends React.Component {
           </div>
 
           <div className="expected">
-            {expected.toFixed(1)} expected
+            {Math.round(expected * 100) / 100} expected
           </div>
           <div className="chance">
             {Math.round(chance * 100)}% chance
