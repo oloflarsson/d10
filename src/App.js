@@ -87,7 +87,7 @@ class App extends React.Component {
                   Again:
                 </div>
                 <div className="value">
-                <input type="number" min="2" value={again} onChange={this.handleAgainChanged} />
+                <input type="number" min="2" max="11" value={again} onChange={this.handleAgainChanged} />
                 </div>
               </div>
             </div>
