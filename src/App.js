@@ -78,7 +78,7 @@ class App extends React.Component {
                 Dices:
               </div>
               <div className="value">
-                <input type="number" min="1" value={dices} onChange={this.handleDicesChanged} />
+                <input className="input" type="number" min="1" value={dices} onChange={this.handleDicesChanged} />
               </div>
             </div>
             <div className="entry">
@@ -86,7 +86,7 @@ class App extends React.Component {
                 Again:
               </div>
               <div className="value">
-              <input type="number" min="2" max="11" value={again} onChange={this.handleAgainChanged} />
+              <input className="input" type="number" min="2" max="11" value={again} onChange={this.handleAgainChanged} />
               </div>
             </div>
           </div>
