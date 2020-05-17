@@ -1,19 +1,25 @@
 import React from 'react';
 import './App.css';
 import DiceUtil from './DiceUtil';
+import LocalStorageAccessor from './LocalStorageAccessor';
 
 const STARTING_DICES = 4
 const STARTING_AGAIN = 10
 const STARTING_EXPECTED = DiceUtil.getExpected(STARTING_DICES, STARTING_AGAIN)
+const STORAGE = new LocalStorageAccessor('storage', {
+  dices: STARTING_DICES,
+  again: STARTING_AGAIN,
+  expected: STARTING_EXPECTED,
+  rollEnabled: true,
+  willpowerEnabled: true,
+  successes: 0,
+})
 
 class App extends React.Component {
-  state = {
-    dices: STARTING_DICES,
-    again: STARTING_AGAIN,
-    expected: STARTING_EXPECTED,
-    rollEnabled: true,
-    willpowerEnabled: true,
-    successes: 0,
+  state = STORAGE.get()
+
+  saveState = () => {
+    STORAGE.set(this.state)
   }
 
   handleDicesChanged = (event) => {
@@ -23,7 +29,7 @@ class App extends React.Component {
     this.setState({
       dices,
       expected,
-    })
+    }, this.saveState)
   }
 
   handleAgainChanged = (event) => {
@@ -33,7 +39,7 @@ class App extends React.Component {
     this.setState({
       again,
       expected,
-    })
+    }, this.saveState)
   }
 
   handleClear = () => {
@@ -41,7 +47,7 @@ class App extends React.Component {
       rollEnabled: true,
       willpowerEnabled: true,
       successes: 0,
-    })
+    }, this.saveState)
   }
 
   handleRoll = () => {
@@ -49,14 +55,14 @@ class App extends React.Component {
     this.rollDices(dices)
     this.setState({
       rollEnabled: false,
-    })
+    }, this.saveState)
   }
 
   handleWillpower = () => {
     this.rollDices(3)
     this.setState({
       willpowerEnabled: false,
-    })
+    }, this.saveState)
   }
 
   rollDices = (dices) => {
@@ -64,7 +70,7 @@ class App extends React.Component {
     const targetSuccesses = successes + DiceUtil.getSuccesses(dices, again)
     this.setState({
       successes: targetSuccesses,
-    }, this.updateExpected)
+    }, this.saveState)
   }
 
   render() {
