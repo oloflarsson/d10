@@ -7,14 +7,19 @@ const STARTING_DICES = 4
 const STARTING_AGAIN = 10
 const STARTING_EXPECTED = DiceUtil.getExpected(STARTING_DICES, STARTING_AGAIN)
 const STARTING_CHANGE = DiceUtil.getChance(STARTING_DICES)
+const STARTING_ROLL_ENABLED = true
+const STARTING_WILLPOWER_ENABLED = true
+const STARTING_SUCCESSES = 0
+const STARTING_WILLPOWER_SUCCESSES = 0
 const STORAGE = new LocalStorageAccessor('storage', {
   dices: STARTING_DICES,
   again: STARTING_AGAIN,
   expected: STARTING_EXPECTED,
   chance: STARTING_CHANGE,
-  rollEnabled: true,
-  willpowerEnabled: true,
-  successes: 0,
+  rollEnabled: STARTING_ROLL_ENABLED,
+  willpowerEnabled: STARTING_WILLPOWER_ENABLED,
+  successes: STARTING_SUCCESSES,
+  willpowerSuccesses: STARTING_WILLPOWER_SUCCESSES,
 })
 
 class App extends React.Component {
@@ -33,6 +38,10 @@ class App extends React.Component {
       dices,
       expected,
       chance,
+      rollEnabled: STARTING_ROLL_ENABLED,
+      willpowerEnabled: STARTING_WILLPOWER_ENABLED,
+      successes: STARTING_SUCCESSES,
+      willpowerSuccesses: STARTING_WILLPOWER_SUCCESSES,
     }, this.saveState)
   }
 
@@ -45,42 +54,46 @@ class App extends React.Component {
       again,
       expected,
       chance,
+      rollEnabled: STARTING_ROLL_ENABLED,
+      willpowerEnabled: STARTING_WILLPOWER_ENABLED,
+      successes: STARTING_SUCCESSES,
+      willpowerSuccesses: STARTING_WILLPOWER_SUCCESSES,
     }, this.saveState)
   }
 
   handleClear = () => {
     this.setState({
-      rollEnabled: true,
-      willpowerEnabled: true,
-      successes: 0,
+      rollEnabled: STARTING_ROLL_ENABLED,
+      willpowerEnabled: STARTING_WILLPOWER_ENABLED,
+      successes: STARTING_SUCCESSES,
+      willpowerSuccesses: STARTING_WILLPOWER_SUCCESSES,
     }, this.saveState)
   }
 
   handleRoll = () => {
-    const { dices } = this.state
-    this.rollDices(dices)
+    const { dices, again, successes } = this.state
+    const additionalSuccesses = DiceUtil.getSuccesses(dices, again)
+    const targetSuccesses = successes + additionalSuccesses
     this.setState({
       rollEnabled: false,
-    }, this.saveState)
-  }
-
-  handleWillpower = () => {
-    this.rollDices(3)
-    this.setState({
-      willpowerEnabled: false,
-    }, this.saveState)
-  }
-
-  rollDices = (dices) => {
-    const { again, successes } = this.state
-    const targetSuccesses = successes + DiceUtil.getSuccesses(dices, again)
-    this.setState({
       successes: targetSuccesses,
     }, this.saveState)
   }
 
+  handleWillpower = () => {
+    const { again, successes } = this.state
+    const dices = 3
+    const additionalSuccesses = DiceUtil.getSuccesses(dices, again)
+    const targetSuccesses = successes + additionalSuccesses
+    this.setState({
+      willpowerEnabled: false,
+      successes: targetSuccesses,
+      willpowerSuccesses: additionalSuccesses
+    }, this.saveState)
+  }
+
   render() {
-    const { dices, again, expected, chance, rollEnabled, willpowerEnabled, successes } = this.state
+    const { dices, again, expected, chance, rollEnabled, willpowerEnabled, successes, willpowerSuccesses } = this.state
     return (
       <div className="App">
         <div className="holder">
@@ -109,16 +122,21 @@ class App extends React.Component {
             <button className="button" type="button" onClick={this.handleWillpower} disabled={willpowerEnabled ? '' : 'disabled'}>Willpower</button>
           </div>
 
+          <div className="chance">
+            {Math.round(chance * 100)}% chance
+          </div>
+          <div className="expected">
+            {Math.round(expected * 100) / 100} expected
+          </div>
           <div className="successes">
             {rollEnabled && willpowerEnabled ? '?' : successes}
           </div>
 
-          <div className="expected">
-            {Math.round(expected * 100) / 100} expected
-          </div>
-          <div className="chance">
-            {Math.round(chance * 100)}% chance
-          </div>
+          {!willpowerEnabled && (
+            <div className="willpowerSuccesses">
+              {willpowerSuccesses} from willpower
+            </div>
+          )}
         </div>
       </div>
     );
