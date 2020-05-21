@@ -97,7 +97,9 @@ class App extends React.Component {
 
     const chanceDescription = '' + Math.round(chance * 100) + '%'
     const expectedDescription = '' + Math.round(expected * 100) / 100
-
+    
+    const tooltipDices = 'The amount of dices to be rolled.'
+    const tooltipAgain = 'Roll one more dice if the dice shows this value and above.'
     const tooltipChance = `The chance to get at least 1 success is ${chanceDescription} when rolling ${dices} dices.`
     const tooltipExpected = `The average amount of successes is ${expectedDescription} when rolling ${dices} dices with ${again}-again.`
 
@@ -106,7 +108,7 @@ class App extends React.Component {
         <div className="holder">
           <div className="map">
             <div className="entry">
-              <div className="key">
+              <div className="key" title={tooltipDices}>
                 Dices:
               </div>
               <div className="value">
@@ -114,7 +116,7 @@ class App extends React.Component {
               </div>
             </div>
             <div className="entry">
-              <div className="key">
+              <div className="key" title={tooltipAgain}>
                 Again:
               </div>
               <div className="value">
