@@ -1,0 +1,86 @@
+* {
+  box-sizing: border-box;
+  width: 100%;
+  font-size: 3vmin;
+}
+
+.App {
+  text-align: center;
+  background-color: #282c34;
+  color: white;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.holder {
+  padding-top: 8vmin;
+  width: 70vmin;
+}
+
+.map {
+  padding-bottom: 1vmin;
+
+  .entry {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 1vmin;
+
+    .key {
+      width: 20%;
+      text-align: left;
+      padding-top: 0.75vmin;
+    }
+    
+    .value {
+      width: 80%;
+
+      .input {
+        padding: 0.75vmin;
+        margin: 0;
+      }
+    }
+  }
+}
+
+.stats {
+  padding-bottom: 0vmin;
+
+  .entry {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 0vmin;
+    cursor: help;
+
+    .key {
+      width: 20%;
+      text-align: left;
+      padding-top: 0.75vmin;
+    }
+    
+    .value {
+      width: 20%;
+      padding: 0.75vmin;
+      text-align: left;
+    }
+  }
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 3vmin;
+  padding-bottom: 1vmin;
+
+  .button {
+    width: 31%;
+    padding: 1vmin;
+    cursor: pointer;
+  }
+}
+
+.successes {
+  font-size: 30vmin;
+  line-height: 30vmin;
+}

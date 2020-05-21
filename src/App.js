@@ -1,5 +1,5 @@
 import React from 'react';
-import './App.css';
+import './App.scss';
 import DiceUtil from './DiceUtil';
 import LocalStorageAccessor from './LocalStorageAccessor';
 
@@ -94,6 +94,13 @@ class App extends React.Component {
 
   render() {
     const { dices, again, expected, chance, rollEnabled, willpowerEnabled, successes, willpowerSuccesses } = this.state
+
+    const chanceDescription = '' + Math.round(chance * 100) + '%'
+    const expectedDescription = '' + Math.round(expected * 100) / 100
+
+    const tooltipChance = `The chance to get at least 1 success is ${chanceDescription} when rolling ${dices} dices.`
+    const tooltipExpected = `The average amount of successes is ${expectedDescription} when rolling ${dices} dices with ${again}-again.`
+
     return (
       <div className="App">
         <div className="holder">
@@ -111,7 +118,26 @@ class App extends React.Component {
                 Again:
               </div>
               <div className="value">
-              <input className="input" type="number" min="2" max="11" value={again} onChange={this.handleAgainChanged} />
+                <input className="input" type="number" min="2" max="11" value={again} onChange={this.handleAgainChanged} />
+              </div>
+            </div>
+          </div>
+
+          <div className="stats">
+            <div className="entry" title={tooltipChance}>
+              <div className="key">
+                Chance:
+              </div>
+              <div className="value">
+                {chanceDescription}
+              </div>
+            </div>
+            <div className="entry" title={tooltipExpected}>
+              <div className="key">
+                Expected:
+              </div>
+              <div className="value">
+                {expectedDescription}
               </div>
             </div>
           </div>
@@ -121,20 +147,14 @@ class App extends React.Component {
             <button className="button" type="button" onClick={this.handleRoll} disabled={rollEnabled ? '' : 'disabled'}>Roll</button>
             <button className="button" type="button" onClick={this.handleWillpower} disabled={willpowerEnabled ? '' : 'disabled'}>Willpower</button>
           </div>
-
-          <div className="chance">
-            {Math.round(chance * 100)}% chance
-          </div>
-          <div className="expected">
-            {Math.round(expected * 100) / 100} expected
-          </div>
+          
           <div className="successes">
             {rollEnabled && willpowerEnabled ? '?' : successes}
           </div>
 
           {!willpowerEnabled && (
             <div className="willpowerSuccesses">
-              {willpowerSuccesses} from willpower
+              {willpowerSuccesses} from Willpower
             </div>
           )}
         </div>
