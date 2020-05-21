@@ -84,5 +84,7 @@
 .successes {
   font-size: 30vmin;
   line-height: 30vmin;
-  z-index: -1;
+  user-select: none;
+  pointer-events: none;
+  z-index: -9000;
 }
