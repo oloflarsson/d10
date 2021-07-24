@@ -1,34 +1,34 @@
-const getValue = () => {
-  return Math.ceil(Math.random() * 10)
-}
+export const getValue = () => {
+  return Math.ceil(Math.random() * 10);
+};
 
-const getSuccessesSingle = (again, rote) => {
-  const value = getValue()
+export const getSuccessesSingle = (again, rote) => {
+  const value = getValue();
 
   if (value < 8) {
     if (rote) {
-      return getSuccessesSingle(again, false)
+      return getSuccessesSingle(again, false);
     } else {
-      return 0
+      return 0;
     }
   }
 
-  let successes = 1
-  
+  let successes = 1;
+
   if (value >= again) {
-    successes += getSuccessesSingle(again, false)
+    successes += getSuccessesSingle(again, false);
   }
 
-  return successes
-}
+  return successes;
+};
 
-const getSuccesses = (dices, again, rote) => {
-  let successes = 0
+export const getSuccesses = (dices, again, rote) => {
+  let successes = 0;
   for (let index = 0; index < dices; index++) {
-    successes += getSuccessesSingle(again, rote)
+    successes += getSuccessesSingle(again, rote);
   }
-  return successes
-}
+  return successes;
+};
 
 /*
 const getExpectedSingleSampledUnmemoized = (again, samples) => {
@@ -43,7 +43,7 @@ window.test1 = getExpectedSingleSampledUnmemoized
 
 const getExpectedSingle = (again, rote) => {
   if (again < 8) {
-    throw new Error('again must be larger than or equal to 8')
+    throw new Error("again must be larger than or equal to 8");
   }
 
   if (rote) {
@@ -52,42 +52,38 @@ const getExpectedSingle = (again, rote) => {
     // The (success) again area, which has the value of one + non rote dice
     // The (success) only area, which has the value of one
 
-    const rerollArea = 7
-    const againArea = 10 - again + 1
-    const onlyArea = 10 - rerollArea - againArea
+    const rerollArea = 7;
+    const againArea = 10 - again + 1;
+    const onlyArea = 10 - rerollArea - againArea;
 
-    const rerollValue = getExpectedSingle(again, false)
-    const againValue = 1 + getExpectedSingle(again, false)
-    const onlyValue = 1
+    const rerollValue = getExpectedSingle(again, false);
+    const againValue = 1 + getExpectedSingle(again, false);
+    const onlyValue = 1;
 
-    return rerollValue * rerollArea / 10 + againValue * againArea / 10 + onlyValue * onlyArea / 10
+    return (
+      (rerollValue * rerollArea) / 10 +
+      (againValue * againArea) / 10 +
+      (onlyValue * onlyArea) / 10
+    );
   }
 
   if (again >= 11) {
-    return 3 / 10
+    return 3 / 10;
   }
 
-  return 3 / (again - 1)
-}
+  return 3 / (again - 1);
+};
 
-const getExpected = (dices, again, rote) => {
-  const expectedSingle = getExpectedSingle(again, rote)
-  return expectedSingle * dices
-}
+export const getExpected = (dices, again, rote) => {
+  const expectedSingle = getExpectedSingle(again, rote);
+  return expectedSingle * dices;
+};
 
-const getChance = (dices, rote) => {
+export const getChance = (dices, rote) => {
   if (rote) {
     // You need to fail with all dices, then roll them all again and fail again.
     // So in practice you need to fail with twice the dices
     dices *= 2;
   }
-  return 1 - Math.pow(0.7, dices)
-}
-
-export default {
-  getValue,
-  getSuccessesSingle,
-  getSuccesses,
-  getExpected,
-  getChance,
-}
+  return 1 - Math.pow(0.7, dices);
+};
