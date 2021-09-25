@@ -2,7 +2,7 @@
   "name": "d10",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://d10.oloflarsson.se",
+  "homepage": "https://d10.olof.tech",
   "dependencies": {
     "node-sass": "^6.0.1",
     "react": "^17.0.2",
