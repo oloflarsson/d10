@@ -6,25 +6,30 @@ import LocalStorageAccessor from "./LocalStorageAccessor";
 const STARTING_DICES = 4;
 const STARTING_AGAIN = 10;
 const STARTING_ROTE = false;
-const STARTING_EXPECTED = DiceUtil.getExpected(STARTING_DICES, STARTING_AGAIN);
-const STARTING_CHANGE = DiceUtil.getChance(STARTING_DICES);
 const STARTING_ROLL_ENABLED = true;
 const STARTING_WILLPOWER_ENABLED = true;
 const STARTING_SUCCESSES = 0;
 const STARTING_WILLPOWER_SUCCESSES = 0;
 const STARTING_PRESETS = [];
-const STORAGE = new LocalStorageAccessor("storagev3", {
+const STORAGE = new LocalStorageAccessor("storagev4", {
   dices: STARTING_DICES,
   again: STARTING_AGAIN,
   rote: STARTING_ROTE,
-  expected: STARTING_EXPECTED,
-  chance: STARTING_CHANGE,
   rollEnabled: STARTING_ROLL_ENABLED,
   willpowerEnabled: STARTING_WILLPOWER_ENABLED,
   successes: STARTING_SUCCESSES,
   willpowerSuccesses: STARTING_WILLPOWER_SUCCESSES,
   presets: STARTING_PRESETS
 });
+
+
+const getChanceDescription = (chance) => {
+  return "" + Math.round(chance * 100) + "%";
+};
+
+const getExpectedDescription = (expected) => {
+  return "" + Math.round(expected * 100) / 100;
+};
 
 class App extends React.Component {
   state = STORAGE.get();
@@ -79,15 +84,10 @@ class App extends React.Component {
   };
 
   handleDicesChanged = (event) => {
-    const { again, rote } = this.state;
     const dices = event.target.value;
-    const expected = DiceUtil.getExpected(dices, again, rote);
-    const chance = DiceUtil.getChance(dices, rote);
     this.edit(
       {
         dices,
-        expected,
-        chance,
         rollEnabled: STARTING_ROLL_ENABLED,
         willpowerEnabled: STARTING_WILLPOWER_ENABLED,
         successes: STARTING_SUCCESSES,
@@ -97,15 +97,10 @@ class App extends React.Component {
   };
 
   handleAgainChanged = (event) => {
-    const { dices, rote } = this.state;
     const again = event.target.value;
-    const expected = DiceUtil.getExpected(dices, again, rote);
-    const chance = DiceUtil.getChance(dices, rote);
     this.edit(
       {
         again,
-        expected,
-        chance,
         rollEnabled: STARTING_ROLL_ENABLED,
         willpowerEnabled: STARTING_WILLPOWER_ENABLED,
         successes: STARTING_SUCCESSES,
@@ -115,15 +110,10 @@ class App extends React.Component {
   };
 
   handleRoteChanged = (event) => {
-    const { again, dices } = this.state;
     const rote = event.target.checked;
-    const expected = DiceUtil.getExpected(dices, again, rote);
-    const chance = DiceUtil.getChance(dices, rote);
     this.edit(
       {
         rote,
-        expected,
-        chance,
         rollEnabled: STARTING_ROLL_ENABLED,
         willpowerEnabled: STARTING_WILLPOWER_ENABLED,
         successes: STARTING_SUCCESSES,
@@ -192,15 +182,11 @@ class App extends React.Component {
   };
 
   handlePresetLoad = ({ dices, again, rote }) => {
-    const expected = DiceUtil.getExpected(dices, again, rote);
-    const chance = DiceUtil.getChance(dices, rote);
     this.edit(
       {
         dices,
         again,
         rote,
-        expected,
-        chance,
         rollEnabled: STARTING_ROLL_ENABLED,
         willpowerEnabled: STARTING_WILLPOWER_ENABLED,
         successes: STARTING_SUCCESSES,
@@ -214,8 +200,6 @@ class App extends React.Component {
       dices,
       again,
       rote,
-      expected,
-      chance,
       rollEnabled,
       willpowerEnabled,
       successes,
@@ -223,8 +207,11 @@ class App extends React.Component {
       presets
     } = this.state;
 
-    const chanceDescription = "" + Math.round(chance * 100) + "%";
-    const expectedDescription = "" + Math.round(expected * 100) / 100;
+    const chance = DiceUtil.getChance(dices, rote);
+    const expected = DiceUtil.getExpected(dices, again, rote);
+
+    const chanceDescription = getChanceDescription(chance);
+    const expectedDescription = getExpectedDescription(expected);
 
     const tooltipDices = "The amount of dices to be rolled.";
     const tooltipAgain =
@@ -329,6 +316,13 @@ class App extends React.Component {
           
           <div className="presets">
             {presets.map(preset => {
+              const presetChance = DiceUtil.getChance(preset.dices, preset.rote);
+              const presetExpected = DiceUtil.getExpected(preset.dices, preset.again, preset.rote);
+
+              const presetChanceDescription = getChanceDescription(presetChance);
+              const presetExpectedDescription = getExpectedDescription(presetExpected);
+              const tooltipPreset = `Dices: ${preset.dices}\nAgain: ${preset.again}\nRote: ${preset.rote}\nChance: ${presetChanceDescription}\nExpected: ${presetExpectedDescription}\n\nLeft click to apply. Right click to edit name. Press ENTER, ESC or click elsewhere to save. Will be deleted if saving with empty name.`;
+
               if (preset.edit) {
                 const handleChange = (e) => {
                   this.editPreset(
@@ -360,7 +354,7 @@ class App extends React.Component {
                   }
                 };
                 return (
-                  <input key={preset.id} className="preset" type="text" value={preset.name} onChange={handleChange} onKeyDown={handleKeyDown} onBlur={handleBlur} autoFocus/>
+                  <input key={preset.id} className="preset" type="text" value={preset.name} onChange={handleChange} onKeyDown={handleKeyDown} onBlur={handleBlur} title={tooltipPreset} autoFocus/>
                 )
               } else {
                 const handleClick = () => {
@@ -371,7 +365,7 @@ class App extends React.Component {
                   this.handlePresetEdit(preset);
                 };
                 return (
-                  <button key={preset.id} className="preset" type="button" onClick={handleClick} onContextMenu={onContextMenu}>{preset.name}</button>
+                  <button key={preset.id} className="preset" type="button" onClick={handleClick} onContextMenu={onContextMenu} title={tooltipPreset}>{preset.name}</button>
                 )
               }
             })}
