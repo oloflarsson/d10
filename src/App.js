@@ -91,6 +91,10 @@ class App extends React.Component {
   };
 
   handleKeyDown = (e) => {
+    if (e.ctrlKey || e.altKey || e.shiftKey) {
+      return;
+    }
+
     if (e.key === 'd') {
       const element = document.getElementById('dices');
       element.focus();
@@ -109,18 +113,22 @@ class App extends React.Component {
           rote: roteAfter,
         }
       )
+      document.activeElement.blur();
     }
 
     if (e.key === 'c') {
       this.handleClear();
+      document.activeElement.blur();
     }
 
     if (e.key === ' ') {
       this.handleRoll();
+      document.activeElement.blur();
     }
 
     if (e.key === 'w') {
       this.handleWillpower();
+      document.activeElement.blur();
     }
   }
 
@@ -385,6 +393,7 @@ class App extends React.Component {
                   );
                 };
                 const handleBlur = () => {
+                  document.activeElement.blur();
                   if (preset.name !== '') {
                     this.editPreset(
                       {
