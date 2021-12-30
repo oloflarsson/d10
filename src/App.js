@@ -22,7 +22,6 @@ const STORAGE = new LocalStorageAccessor("storagev4", {
   presets: STARTING_PRESETS
 });
 
-
 const getChanceDescription = (chance) => {
   return "" + Math.round(chance * 100) + "%";
 };
@@ -33,6 +32,14 @@ const getExpectedDescription = (expected) => {
 
 class App extends React.Component {
   state = STORAGE.get();
+
+  componentDidMount() {
+    document.addEventListener("keydown", this.handleKeyDown);
+  };
+
+  componentWillUnmount() {
+    document.removeEventListener("keydown", this.handleKeyDown);
+  };
 
   edit = (editState) => {
     this.setState(
@@ -83,6 +90,40 @@ class App extends React.Component {
     STORAGE.set(this.state);
   };
 
+  handleKeyDown = (e) => {
+    if (e.key === 'd') {
+      const element = document.getElementById('dices');
+      element.focus();
+    }
+
+    if (e.key === 'a') {
+      const element = document.getElementById('again');
+      element.focus();
+    }
+
+    if (e.key === 'r') {
+      const { rote } = this.state;
+      const roteAfter = !rote;
+      this.edit(
+        {
+          rote: roteAfter,
+        }
+      )
+    }
+
+    if (e.key === 'c') {
+      this.handleClear();
+    }
+
+    if (e.key === ' ') {
+      this.handleRoll();
+    }
+
+    if (e.key === 'w') {
+      this.handleWillpower();
+    }
+  }
+
   handleDicesChanged = (event) => {
     const dices = event.target.value;
     this.edit(
@@ -111,6 +152,10 @@ class App extends React.Component {
 
   handleRoteChanged = (event) => {
     const rote = event.target.checked;
+    this.handleRoteChangedInner(rote);
+  };
+
+  handleRoteChangedInner = (rote) => {
     this.edit(
       {
         rote,
@@ -134,7 +179,10 @@ class App extends React.Component {
   };
 
   handleRoll = () => {
-    const { dices, again, rote, successes } = this.state;
+    const { rollEnabled, dices, again, rote, successes } = this.state;
+    if (!rollEnabled) {
+      return;
+    }
     const additionalSuccesses = DiceUtil.getSuccesses(dices, again, rote);
     const targetSuccesses = successes + additionalSuccesses;
     this.edit(
@@ -146,7 +194,10 @@ class App extends React.Component {
   };
 
   handleWillpower = () => {
-    const { again, rote, successes } = this.state;
+    const { willpowerEnabled, again, rote, successes } = this.state;
+    if (!willpowerEnabled) {
+      return;
+    }
     const dices = 3;
     const additionalSuccesses = DiceUtil.getSuccesses(dices, again, rote);
     const targetSuccesses = successes + additionalSuccesses;
@@ -209,7 +260,6 @@ class App extends React.Component {
 
     const chance = DiceUtil.getChance(dices, rote);
     const expected = DiceUtil.getExpected(dices, again, rote);
-
     const chanceDescription = getChanceDescription(chance);
     const expectedDescription = getExpectedDescription(expected);
 
@@ -231,6 +281,7 @@ class App extends React.Component {
               </div>
               <div className="value">
                 <input
+                  id="dices"
                   className="input"
                   type="number"
                   min="1"
@@ -245,6 +296,7 @@ class App extends React.Component {
               </div>
               <div className="value">
                 <input
+                  id="again"
                   className="input"
                   type="number"
                   min="8"
@@ -260,6 +312,7 @@ class App extends React.Component {
               </div>
               <div className="value">
                 <input
+                  id="rote"
                   className="input checkbox"
                   type="checkbox"
                   checked={rote}
@@ -318,7 +371,6 @@ class App extends React.Component {
             {presets.map(preset => {
               const presetChance = DiceUtil.getChance(preset.dices, preset.rote);
               const presetExpected = DiceUtil.getExpected(preset.dices, preset.again, preset.rote);
-
               const presetChanceDescription = getChanceDescription(presetChance);
               const presetExpectedDescription = getExpectedDescription(presetExpected);
               const tooltipPreset = `Dices: ${preset.dices}\nAgain: ${preset.again}\nRote: ${preset.rote}\nChance: ${presetChanceDescription}\nExpected: ${presetExpectedDescription}\n\nLeft click to apply. Right click to edit name. Press ENTER, ESC or click elsewhere to save. Will be deleted if saving with empty name.`;
@@ -349,6 +401,7 @@ class App extends React.Component {
                   }
                 }
                 const handleKeyDown = (e) => {
+                  e.stopPropagation();
                   if (e.key === 'Escape' || e.key === 'Enter') {
                     handleBlur();
                   }
