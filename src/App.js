@@ -34,11 +34,11 @@ class App extends React.Component {
   state = STORAGE.get();
 
   componentDidMount() {
-    document.addEventListener("keydown", this.handleKeyDown);
+    document.addEventListener("keypress", this.handleKeyPress);
   };
 
   componentWillUnmount() {
-    document.removeEventListener("keydown", this.handleKeyDown);
+    document.removeEventListener("keypress", this.handleKeyPress);
   };
 
   edit = (editState) => {
@@ -90,7 +90,7 @@ class App extends React.Component {
     STORAGE.set(this.state);
   };
 
-  handleKeyDown = (e) => {
+  handleKeyPress = (e) => {
     if (e.ctrlKey || e.altKey || e.shiftKey) {
       return;
     }
@@ -108,11 +108,7 @@ class App extends React.Component {
     if (e.key === 'r') {
       const { rote } = this.state;
       const roteAfter = !rote;
-      this.edit(
-        {
-          rote: roteAfter,
-        }
-      )
+      this.handleRoteChangedInner(roteAfter);
       document.activeElement.blur();
     }
 
@@ -409,14 +405,14 @@ class App extends React.Component {
                     );
                   }
                 }
-                const handleKeyDown = (e) => {
+                const handleKeyPress = (e) => {
                   e.stopPropagation();
                   if (e.key === 'Escape' || e.key === 'Enter') {
                     handleBlur();
                   }
                 };
                 return (
-                  <input key={preset.id} className="preset" type="text" value={preset.name} onChange={handleChange} onKeyDown={handleKeyDown} onBlur={handleBlur} title={tooltipPreset} autoFocus/>
+                  <input key={preset.id} className="preset" type="text" value={preset.name} onChange={handleChange} onKeyPress={handleKeyPress} onBlur={handleBlur} title={tooltipPreset} autoFocus/>
                 )
               } else {
                 const handleClick = () => {
