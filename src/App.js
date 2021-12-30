@@ -12,7 +12,8 @@ const STARTING_ROLL_ENABLED = true;
 const STARTING_WILLPOWER_ENABLED = true;
 const STARTING_SUCCESSES = 0;
 const STARTING_WILLPOWER_SUCCESSES = 0;
-const STORAGE = new LocalStorageAccessor("storagev2", {
+const STARTING_PRESETS = [];
+const STORAGE = new LocalStorageAccessor("storagev3", {
   dices: STARTING_DICES,
   again: STARTING_AGAIN,
   rote: STARTING_ROTE,
@@ -22,10 +23,56 @@ const STORAGE = new LocalStorageAccessor("storagev2", {
   willpowerEnabled: STARTING_WILLPOWER_ENABLED,
   successes: STARTING_SUCCESSES,
   willpowerSuccesses: STARTING_WILLPOWER_SUCCESSES,
+  presets: STARTING_PRESETS
 });
 
 class App extends React.Component {
   state = STORAGE.get();
+
+  edit = (editState) => {
+    this.setState(
+      editState,
+      this.saveState
+    );
+  }
+
+  editPreset = (presetState) => {
+    const { presets } = this.state;
+
+    const presetsAfter = presets.map(preset => {
+      if (preset.id === presetState.id) {
+        return Object.assign({}, preset, presetState);
+      } else {
+        return preset;
+      }
+    });
+
+    this.edit(
+      {
+        presets: presetsAfter,
+      }
+    );
+  }
+
+  addPreset = (presetState) => {
+    const { presets } = this.state;
+    const presetsAfter = [...presets, presetState];
+    this.edit(
+      {
+        presets: presetsAfter,
+      }
+    );
+  }
+
+  removePreset = (presetState) => {
+    const { presets } = this.state;
+    const presetsAfter = presets.filter(preset => preset.id !== presetState.id);
+    this.edit(
+      {
+        presets: presetsAfter,
+      }
+    );
+  }
 
   saveState = () => {
     STORAGE.set(this.state);
@@ -36,7 +83,7 @@ class App extends React.Component {
     const dices = event.target.value;
     const expected = DiceUtil.getExpected(dices, again, rote);
     const chance = DiceUtil.getChance(dices, rote);
-    this.setState(
+    this.edit(
       {
         dices,
         expected,
@@ -45,8 +92,7 @@ class App extends React.Component {
         willpowerEnabled: STARTING_WILLPOWER_ENABLED,
         successes: STARTING_SUCCESSES,
         willpowerSuccesses: STARTING_WILLPOWER_SUCCESSES,
-      },
-      this.saveState
+      }
     );
   };
 
@@ -55,7 +101,7 @@ class App extends React.Component {
     const again = event.target.value;
     const expected = DiceUtil.getExpected(dices, again, rote);
     const chance = DiceUtil.getChance(dices, rote);
-    this.setState(
+    this.edit(
       {
         again,
         expected,
@@ -64,8 +110,7 @@ class App extends React.Component {
         willpowerEnabled: STARTING_WILLPOWER_ENABLED,
         successes: STARTING_SUCCESSES,
         willpowerSuccesses: STARTING_WILLPOWER_SUCCESSES,
-      },
-      this.saveState
+      }
     );
   };
 
@@ -74,7 +119,7 @@ class App extends React.Component {
     const rote = event.target.checked;
     const expected = DiceUtil.getExpected(dices, again, rote);
     const chance = DiceUtil.getChance(dices, rote);
-    this.setState(
+    this.edit(
       {
         rote,
         expected,
@@ -83,20 +128,18 @@ class App extends React.Component {
         willpowerEnabled: STARTING_WILLPOWER_ENABLED,
         successes: STARTING_SUCCESSES,
         willpowerSuccesses: STARTING_WILLPOWER_SUCCESSES,
-      },
-      this.saveState
+      }
     );
   };
 
   handleClear = () => {
-    this.setState(
+    this.edit(
       {
         rollEnabled: STARTING_ROLL_ENABLED,
         willpowerEnabled: STARTING_WILLPOWER_ENABLED,
         successes: STARTING_SUCCESSES,
         willpowerSuccesses: STARTING_WILLPOWER_SUCCESSES,
-      },
-      this.saveState
+      }
     );
   };
 
@@ -104,12 +147,11 @@ class App extends React.Component {
     const { dices, again, rote, successes } = this.state;
     const additionalSuccesses = DiceUtil.getSuccesses(dices, again, rote);
     const targetSuccesses = successes + additionalSuccesses;
-    this.setState(
+    this.edit(
       {
         rollEnabled: false,
         successes: targetSuccesses,
-      },
-      this.saveState
+      }
     );
   };
 
@@ -118,13 +160,52 @@ class App extends React.Component {
     const dices = 3;
     const additionalSuccesses = DiceUtil.getSuccesses(dices, again, rote);
     const targetSuccesses = successes + additionalSuccesses;
-    this.setState(
+    this.edit(
       {
         willpowerEnabled: false,
         successes: targetSuccesses,
         willpowerSuccesses: additionalSuccesses,
-      },
-      this.saveState
+      }
+    );
+  };
+
+  handlePresetAdd = () => {
+    const { dices, again, rote } = this.state;
+    const id = Date.now();
+    let name = `${dices} A${again}`;
+    if (rote) {
+      name += ' R';
+    }
+    const edit = false;
+    const preset = { id, name, dices, again, rote, edit };
+    this.addPreset(preset);
+  };
+
+  handlePresetEdit = ({ id }) => {
+    const edit = true;
+    this.editPreset(
+      {
+        id,
+        edit,
+      }
+    );
+  };
+
+  handlePresetLoad = ({ dices, again, rote }) => {
+    const expected = DiceUtil.getExpected(dices, again, rote);
+    const chance = DiceUtil.getChance(dices, rote);
+    this.edit(
+      {
+        dices,
+        again,
+        rote,
+        expected,
+        chance,
+        rollEnabled: STARTING_ROLL_ENABLED,
+        willpowerEnabled: STARTING_WILLPOWER_ENABLED,
+        successes: STARTING_SUCCESSES,
+        willpowerSuccesses: STARTING_WILLPOWER_SUCCESSES,
+      }
     );
   };
 
@@ -139,6 +220,7 @@ class App extends React.Component {
       willpowerEnabled,
       successes,
       willpowerSuccesses,
+      presets
     } = this.state;
 
     const chanceDescription = "" + Math.round(chance * 100) + "%";
@@ -237,11 +319,64 @@ class App extends React.Component {
             {rollEnabled && willpowerEnabled ? "?" : successes}
           </div>
 
-          {!willpowerEnabled && (
-            <div className="willpowerSuccesses">
-              {willpowerSuccesses} from Willpower
-            </div>
-          )}
+          
+          <div className="willpowerSuccesses">
+            {!willpowerEnabled
+              ? (<>{willpowerSuccesses} from Willpower</>)
+              : (<>&nbsp;</>)
+            }
+          </div>
+          
+          <div className="presets">
+            {presets.map(preset => {
+              if (preset.edit) {
+                const handleChange = (e) => {
+                  this.editPreset(
+                    {
+                      id: preset.id,
+                      name: e.target.value,
+                    }
+                  );
+                };
+                const handleBlur = () => {
+                  if (preset.name !== '') {
+                    this.editPreset(
+                      {
+                        id: preset.id,
+                        edit: false,
+                      }
+                    );
+                  } else {
+                    this.removePreset(
+                      {
+                        id: preset.id,
+                      }
+                    );
+                  }
+                }
+                const handleKeyDown = (e) => {
+                  if (e.key === 'Escape' || e.key === 'Enter') {
+                    handleBlur();
+                  }
+                };
+                return (
+                  <input key={preset.id} className="preset" type="text" value={preset.name} onChange={handleChange} onKeyDown={handleKeyDown} onBlur={handleBlur} autoFocus/>
+                )
+              } else {
+                const handleClick = () => {
+                  this.handlePresetLoad(preset);
+                };
+                const onContextMenu = (e) => {
+                  e.preventDefault();
+                  this.handlePresetEdit(preset);
+                };
+                return (
+                  <button key={preset.id} className="preset" type="button" onClick={handleClick} onContextMenu={onContextMenu}>{preset.name}</button>
+                )
+              }
+            })}
+            <button className="preset" type="button" onClick={this.handlePresetAdd}>+</button>
+          </div>
         </div>
       </div>
     );

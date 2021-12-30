@@ -94,3 +94,21 @@
   pointer-events: none;
   z-index: -9000;
 }
+
+.presets {
+  padding-top: 3vmin;
+  padding-bottom: 1vmin;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 0.4vmin;
+
+  .preset {
+    padding: 0.5vmin;
+    font-size: 50%;
+    text-align: center;
+  }
+  button.preset {
+    cursor: pointer;
+  }
+}
