@@ -1,8 +1,24 @@
+const fixAgain = (again) => {
+  if (!again || again < 8) {
+    again = 10;
+  }
+  return again;
+};
+
+const fixDices = (dices) => {
+  if (dices < 0) {
+    dices = 0;
+  }
+  return dices;
+};
+
 export const getValue = () => {
   return Math.ceil(Math.random() * 10);
 };
 
 export const getSuccessesSingle = (again, rote) => {
+  again = fixAgain(again);
+
   const value = getValue();
 
   if (value < 8) {
@@ -23,6 +39,9 @@ export const getSuccessesSingle = (again, rote) => {
 };
 
 export const getSuccesses = (dices, again, rote) => {
+  dices = fixDices(dices);
+  again = fixAgain(again);
+
   let successes = 0;
   for (let index = 0; index < dices; index++) {
     successes += getSuccessesSingle(again, rote);
@@ -42,9 +61,7 @@ window.test1 = getExpectedSingleSampledUnmemoized
 */
 
 const getExpectedSingle = (again, rote) => {
-  if (again < 8) {
-    throw new Error("again must be larger than or equal to 8");
-  }
+  again = fixAgain(again);
 
   if (rote) {
     // There is three dice "areas"
@@ -75,11 +92,16 @@ const getExpectedSingle = (again, rote) => {
 };
 
 export const getExpected = (dices, again, rote) => {
+  dices = fixDices(dices);
+  again = fixAgain(again);
+
   const expectedSingle = getExpectedSingle(again, rote);
   return expectedSingle * dices;
 };
 
 export const getChance = (dices, rote) => {
+  dices = fixDices(dices);
+
   if (rote) {
     // You need to fail with all dices, then roll them all again and fail again.
     // So in practice you need to fail with twice the dices
